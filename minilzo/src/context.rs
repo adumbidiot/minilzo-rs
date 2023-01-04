@@ -8,7 +8,16 @@ use std::mem::MaybeUninit;
 static INIT_ERROR_CODE: Lazy<ErrorCode> =
     Lazy::new(|| ErrorCode(unsafe { minilzo_sys::lzo_init_func() }));
 
-#[derive(Debug, Clone)]
+/// A compression and decompression context.
+///
+/// Serves as proof of library initialization.
+/// This may be copied and cloned freely and cheaply; this is a zero-sized struct.
+///
+/// Note that creating a context incurs some cost,
+/// as if it is the first context the library initialization routines are run.
+/// Additionally, 
+/// there is synchronization performed to ensure that the initialization routine is run only once.
+#[derive(Debug, Copy, Clone)]
 pub struct Context {
     _data: PhantomData<bool>,
 }
