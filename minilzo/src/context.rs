@@ -50,11 +50,11 @@ impl Context {
     }
 
     /// Compress
-    pub fn compress<'i>(
+    pub fn compress<'i, 'o>(
         &self,
         input: &'i [u8],
-        mut output: impl OutputBuffer,
-    ) -> Result<&mut [u8], ErrorCode> {
+        mut output: impl OutputBuffer + 'o,
+    ) -> Result<&'o mut [u8], ErrorCode> {
         const WORKSPACE_LEN_BYTES: usize = minilzo_sys::LZO1X_1_MEM_COMPRESS_ as usize;
         const WORKSPACE_LEN: usize = (WORKSPACE_LEN_BYTES + (std::mem::size_of::<lzo_align_t>())
             - 1)
@@ -84,11 +84,11 @@ impl Context {
     }
 
     /// Decompress
-    pub fn decompress<'i>(
+    pub fn decompress<'i, 'o>(
         &self,
         input: &'i [u8],
-        mut output: impl OutputBuffer,
-    ) -> Result<&mut [u8], ErrorCode> {
+        mut output: impl OutputBuffer + 'o,
+    ) -> Result<&'o mut [u8], ErrorCode> {
         let input_len = input.len().try_into().unwrap();
         let output_ptr = output.get_ptr();
         let mut output_len = output.get_size();
