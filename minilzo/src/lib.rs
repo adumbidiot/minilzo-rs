@@ -7,6 +7,7 @@ pub use self::error_code::ErrorCode;
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::mem::MaybeUninit;
 
     #[test]
     fn testmini_c_port() {
