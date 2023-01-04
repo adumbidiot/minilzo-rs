@@ -15,7 +15,7 @@ static INIT_ERROR_CODE: Lazy<ErrorCode> =
 ///
 /// Note that creating a context incurs some cost,
 /// as if it is the first context the library initialization routines are run.
-/// Additionally, 
+/// Additionally,
 /// there is synchronization performed to ensure that the initialization routine is run only once.
 #[derive(Debug, Copy, Clone)]
 pub struct Context {
