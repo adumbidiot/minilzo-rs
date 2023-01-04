@@ -26,10 +26,7 @@ pub struct Context {
 impl Context {
     /// Make a new [`Context`].
     pub fn new() -> Result<Self, ErrorCode> {
-        let error = *INIT_ERROR_CODE;
-        if !error.is_ok() {
-            return Err(error);
-        }
+        INIT_ERROR_CODE.into_result()?;
 
         Ok(Self { _data: PhantomData })
     }
@@ -74,10 +71,7 @@ impl Context {
             )
         };
 
-        let error = ErrorCode(error);
-        if !error.is_ok() {
-            return Err(error);
-        }
+        ErrorCode(error).into_result()?;
 
         let output_len = output_len.try_into().unwrap();
         Ok(unsafe { std::slice::from_raw_parts_mut(output_ptr.cast(), output_len) })
@@ -103,10 +97,7 @@ impl Context {
             )
         };
 
-        let error = ErrorCode(error);
-        if !error.is_ok() {
-            return Err(error);
-        }
+        ErrorCode(error).into_result()?;
 
         let output_len = output_len.try_into().unwrap();
         Ok(unsafe { std::slice::from_raw_parts_mut(output_ptr.cast(), output_len) })

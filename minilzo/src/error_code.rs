@@ -62,6 +62,15 @@ impl ErrorCode {
             _ => None,
         }
     }
+
+    /// Transform this error into a result, mapping OK to Ok(()) and everything else to Err(self).
+    pub fn into_result(self) -> Result<(), Self> {
+        if self.is_ok() {
+            Ok(())
+        } else {
+            Err(self)
+        }
+    }
 }
 
 impl std::fmt::Display for ErrorCode {
