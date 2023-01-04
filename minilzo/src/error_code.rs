@@ -74,3 +74,5 @@ impl std::fmt::Display for ErrorCode {
         )
     }
 }
+
+impl std::error::Error for ErrorCode {}
