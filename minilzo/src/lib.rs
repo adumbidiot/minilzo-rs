@@ -141,7 +141,7 @@ mod test {
 
         let mut decompressed = vec![std::mem::MaybeUninit::uninit(); 128 * 1024];
         let decompressed_len = context
-            .decompress(&compressed, &mut decompressed)
+            .decompress(compressed, &mut decompressed)
             .expect("failed to decompress");
         let decompressed: &[u8] =
             unsafe { std::slice::from_raw_parts(decompressed.as_ptr().cast(), decompressed_len) };
