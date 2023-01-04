@@ -50,24 +50,25 @@ impl Context {
     }
 
     /// Compress
-    pub fn compress(
+    pub fn compress<'i>(
         &self,
-        input: &[u8],
+        input: &'i [u8],
         mut output: impl OutputBuffer,
-    ) -> Result<usize, ErrorCode> {
+    ) -> Result<&mut [u8], ErrorCode> {
         const WORKSPACE_LEN_BYTES: usize = minilzo_sys::LZO1X_1_MEM_COMPRESS_ as usize;
         const WORKSPACE_LEN: usize = (WORKSPACE_LEN_BYTES + (std::mem::size_of::<lzo_align_t>())
             - 1)
             / std::mem::size_of::<lzo_align_t>();
 
         let input_len = input.len().try_into().unwrap();
+        let output_ptr = output.get_ptr();
         let mut output_len = output.get_size();
         let mut workspace = [MaybeUninit::<lzo_align_t>::uninit(); WORKSPACE_LEN];
         let error = unsafe {
             minilzo_sys::lzo1x_1_compress(
                 input.as_ptr(),
                 input_len,
-                output.get_ptr().cast(),
+                output_ptr.cast(),
                 &mut output_len,
                 workspace.as_mut_ptr().cast(),
             )
@@ -78,23 +79,25 @@ impl Context {
             return Err(error);
         }
 
-        Ok(output_len.try_into().unwrap())
+        let output_len = output_len.try_into().unwrap();
+        Ok(unsafe { std::slice::from_raw_parts_mut(output_ptr.cast(), output_len) })
     }
 
     /// Decompress
-    pub fn decompress(
+    pub fn decompress<'i>(
         &self,
-        input: &[u8],
+        input: &'i [u8],
         mut output: impl OutputBuffer,
-    ) -> Result<usize, ErrorCode> {
+    ) -> Result<&mut [u8], ErrorCode> {
         let input_len = input.len().try_into().unwrap();
+        let output_ptr = output.get_ptr();
         let mut output_len = output.get_size();
 
         let error = unsafe {
             minilzo_sys::lzo1x_decompress_safe(
                 input.as_ptr(),
                 input_len,
-                output.get_ptr().cast(),
+                output_ptr.cast(),
                 &mut output_len,
                 std::ptr::null_mut(),
             )
@@ -105,7 +108,8 @@ impl Context {
             return Err(error);
         }
 
-        Ok(output_len.try_into().unwrap())
+        let output_len = output_len.try_into().unwrap();
+        Ok(unsafe { std::slice::from_raw_parts_mut(output_ptr.cast(), output_len) })
     }
 }
 
