@@ -1,0 +1,8 @@
+[package]
+name = "minilzo"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+minilzo-sys = { version = "0.0.0", path = "../minilzo-sys" }
+once_cell = { version = "1.17.0", features = [ "std" ], default-features = false }
