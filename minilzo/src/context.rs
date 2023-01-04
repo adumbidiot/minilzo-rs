@@ -81,7 +81,7 @@ impl Context {
         let mut output_len = output.len().try_into().unwrap();
 
         let error = unsafe {
-            minilzo_sys::lzo1x_decompress(
+            minilzo_sys::lzo1x_decompress_safe(
                 input.as_ptr(),
                 input_len,
                 output.as_mut_ptr().cast(),
