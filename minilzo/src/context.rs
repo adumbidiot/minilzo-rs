@@ -1,4 +1,5 @@
 use crate::ErrorCode;
+use crate::OutputBuffer;
 use minilzo_sys::lzo_align_t;
 use once_cell::sync::Lazy;
 use std::ffi::CStr;
@@ -52,7 +53,7 @@ impl Context {
     pub fn compress(
         &self,
         input: &[u8],
-        output: &mut [MaybeUninit<u8>],
+        mut output: impl OutputBuffer,
     ) -> Result<usize, ErrorCode> {
         const WORKSPACE_LEN_BYTES: usize = minilzo_sys::LZO1X_1_MEM_COMPRESS_ as usize;
         const WORKSPACE_LEN: usize = (WORKSPACE_LEN_BYTES + (std::mem::size_of::<lzo_align_t>())
@@ -60,13 +61,13 @@ impl Context {
             / std::mem::size_of::<lzo_align_t>();
 
         let input_len = input.len().try_into().unwrap();
-        let mut output_len = output.len().try_into().unwrap();
+        let mut output_len = output.get_size();
         let mut workspace = [MaybeUninit::<lzo_align_t>::uninit(); WORKSPACE_LEN];
         let error = unsafe {
             minilzo_sys::lzo1x_1_compress(
                 input.as_ptr(),
                 input_len,
-                output.as_mut_ptr().cast(),
+                output.get_ptr().cast(),
                 &mut output_len,
                 workspace.as_mut_ptr().cast(),
             )
@@ -84,16 +85,16 @@ impl Context {
     pub fn decompress(
         &self,
         input: &[u8],
-        output: &mut [MaybeUninit<u8>],
+        mut output: impl OutputBuffer,
     ) -> Result<usize, ErrorCode> {
         let input_len = input.len().try_into().unwrap();
-        let mut output_len = output.len().try_into().unwrap();
+        let mut output_len = output.get_size();
 
         let error = unsafe {
             minilzo_sys::lzo1x_decompress_safe(
                 input.as_ptr(),
                 input_len,
-                output.as_mut_ptr().cast(),
+                output.get_ptr().cast(),
                 &mut output_len,
                 std::ptr::null_mut(),
             )
