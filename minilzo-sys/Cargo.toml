@@ -8,5 +8,5 @@ build = "build.rs"
 [dependencies]
 
 [build-dependencies]
-cc = "1.0.79"
+cc = "1.0.83"
 bindgen = "0.64.0"
