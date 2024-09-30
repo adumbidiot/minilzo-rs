@@ -6,4 +6,4 @@ license = "GPL-2.0"
 
 [dependencies]
 minilzo-sys = { version = "0.0.0", path = "../minilzo-sys" }
-once_cell = { version = "1.19.0", features = [ "std" ], default-features = false }
+once_cell = { version = "1.20.1", features = [ "std" ], default-features = false }
