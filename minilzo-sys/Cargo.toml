@@ -9,4 +9,4 @@ build = "build.rs"
 
 [build-dependencies]
 cc = "1.1.37"
-bindgen = "0.64.0"
+bindgen = "0.71.0"
